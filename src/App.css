@@ -13,19 +13,76 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.Header {
+  display: grid;
+  grid-template-columns: 80% 10% 10%;
+  /* background-color: #282c34; */
   font-size: calc(10px + 2vmin);
-  color: white;
+  /* color: white; */
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.Header-title {
+  grid-column: 1;
+  margin-left: 20rem;
+}
+
+.Header-dropdown {
+  grid-column: 2;
+  align-self: center;
+  margin-top: 2rem;
+}
+
+.Header-upload-button {
+  grid-column: 3;
+  align-self: center;
+}
+
+.Gallery {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.Photo {
+  min-width: 30rem;
+  min-height: 15rem;
+  margin: 0 4rem;
+}
+
+img {
+  width: 20rem;
+  height: 10rem;
+}
+
+.Pagination {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.upload-image-input {
+  display: none;
+}
+
+.MuiInput-root {
+  width: 100%;
+}
+
+input{
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.MuiFormLabel-root {
+  margin-right: 0 !important;
+}
+
+label {
+  margin-right: 6rem;
 }
 
 @keyframes App-logo-spin {
@@ -34,5 +91,16 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media all and (max-width: 960px) and (min-width: 641px) {
+  /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */ 
+  .Header {
+    grid-template-columns: 50% 25% 25%;
+  }
+
+  .Header-title {
+    margin-left: 10rem;
   }
 }
