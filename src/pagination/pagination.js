@@ -12,7 +12,7 @@ const PaginationComponent = ({ count=5, handlePaginationChange=f=>f}) => {
 
 PaginationComponent.propTypes = {
     count: PropTypes.number,
-    handlePaginationChange: PropTypes.func.isRequired
+    handlePaginationChange: PropTypes.func
 }
 
 export default PaginationComponent;

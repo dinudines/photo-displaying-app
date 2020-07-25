@@ -21,9 +21,9 @@ const Header = ({album, handleImageChange=f=>f, handleImageUpload=f=>f, handleDr
 
 Header.propTypes = {
     album: PropTypes.string.isRequired,
-    handleImageChange: PropTypes.func.isRequired,
-    handleImageUpload: PropTypes.func.isRequired,
-    handleDropdownChange: PropTypes.func.isRequired
+    handleImageChange: PropTypes.func,
+    handleImageUpload: PropTypes.func,
+    handleDropdownChange: PropTypes.func
 }
 
 export default Header;

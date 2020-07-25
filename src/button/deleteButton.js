@@ -20,7 +20,7 @@ DeleteButton.propTypes = {
     id: PropTypes.string.isRequired,
     album: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
-    handleImageDelete: PropTypes.func.isRequired
+    handleImageDelete: PropTypes.func
 };
 
 export default DeleteButton;

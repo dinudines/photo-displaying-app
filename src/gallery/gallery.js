@@ -16,7 +16,7 @@ const Gallery = ({ photos, handleImageDelete=f=>f}) => {
 
 Gallery.propTypes = {
     photos: PropTypes.array.isRequired,
-    handleImageDelete: PropTypes.func.isRequired
+    handleImageDelete: PropTypes.func
 }
 
 export default Gallery;

@@ -19,7 +19,7 @@ const Dropdown = ({album, handleDropdownChange=f=>f}) => {
 
 Dropdown.propTypes = {
     album: PropTypes.oneOf(['Travel', 'Food', 'Personal', 'Nature', 'Other']).isRequired,
-    handleDropdownChange: PropTypes.func.isRequired
+    handleDropdownChange: PropTypes.func
 }
 
 export default Dropdown;

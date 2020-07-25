@@ -14,8 +14,8 @@ const Body = ({images, handleImageDelete=f=>f, handlePaginationChange=f=>f}) => 
 
 Body.propTypes = {
     images: PropTypes.array.isRequired,
-    handleImageDelete: PropTypes.func.isRequired,
-    handlePaginationChange: PropTypes.func.isRequired
+    handleImageDelete: PropTypes.func,
+    handlePaginationChange: PropTypes.func
 }
 
 export default Body;

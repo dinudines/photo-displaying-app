@@ -22,8 +22,8 @@ const UploadButtonComponent = ({ handleImageChange=f=>f, handleImageUpload=f=>f}
 }
 
 UploadButtonComponent.propTypes = {
-    handleImageChange: PropTypes.func.isRequired,
-    handleImageUpload: PropTypes.func.isRequired
+    handleImageChange: PropTypes.func,
+    handleImageUpload: PropTypes.func
 }
 
 export default UploadButtonComponent;
