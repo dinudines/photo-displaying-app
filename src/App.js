@@ -1,161 +1,120 @@
-import React from 'react';
-import Header from './homePage/header';
-import fetch from 'isomorphic-fetch';
-import { GET_PHOTOS, UPLOAD_PHOTOS, DELETE_PHOTO } from './constants';
+/* eslint-disable import/no-cycle */
+import React, { useState } from 'react';
+import Header from './components/homePage/header';
+import Body from './components/homePage/body';
+import useImages from './customHooks/useImages';
+import { UPLOAD_PHOTOS, DELETE_PHOTO } from './constants';
 import './App.css';
-import Body from './homePage/body';
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      images: [],
-      loading: false,
-      error: false,
-      skip: 0,
-      limit: 10,
-      page: 1,
-      uploadImages: '',
-      key: '',
-      album: 'Travel'
-    }
-    this.handlePaginationChange = this.handlePaginationChange.bind(this);
-    this.handleDropdownChange = this.handleDropdownChange.bind(this);
-    this.handleImageChange = this.handleImageChange.bind(this);
-    this.handleImageUpload = this.handleImageUpload.bind(this);
-    this.handleImageDelete = this.handleImageDelete.bind(this);
-  }
+const HeaderContext = React.createContext();
+const BodyContext = React.createContext();
 
-  componentDidMount() {
-    const { skip, limit } = this.state;
-    this.setState({ loading: true });
-    this.handleDataChange(skip, limit);
-  }
+const App = () => {
+  const [skip, setSkip] = useState(0);
+  const [limit] = useState(10);
+  const [uploadedImages, setUploadedImages] = useState('');
+  const [uploadError, setUploadError] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
+  const [isNewImagesUploaded, setIsNewImagesUploaded] = useState(false);
+  const [isImageDeleted, setIsImageDeleted] = useState(false);
+  const [images, error, loading] = useImages(skip, limit, isNewImagesUploaded, isImageDeleted);
+  const [page, setPage] = useState(1);
+  const [album, setAlbum] = useState('Travel');
 
-  handlePaginationChange(event, page) {
-    const { limit } = this.state;
-    const skip = page === 1 ? 0 : page * 10;
-    this.setState({
-      loading: true,
-      page: page
-    }); 
-    this.handleDataChange(skip, limit);
-  }
+  const handlePaginationChange = (event, newPage) => {
+    const newSkip = newPage === 1 ? 0 : newPage * 10;
+    setSkip(newSkip);
+    setPage(newPage);
+  };
 
-  handleDropdownChange(e) {
-    this.setState({ album: e.target.value });
-  }
+  const handleDropdownChange = (e) => {
+    setAlbum(e.target.value);
+  };
 
-  handleDataChange(skip, limit) {
-    fetch(GET_PHOTOS, {
-      method: 'POST',
-      body: JSON.stringify({
-        skip: skip,
-        limit: limit
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(response => response.json())
-      .then(data => {
-        if (data.message === 'OK') {
-          this.setState({
-            loading: true,
-            images: data.documents
-          })
-        } else {
-          this.setState({
-            loading: true,
-            error: true
-          })
-        }
-    })
-  }
+  const handleImageChange = (e) => {
+    setUploadedImages(e.target.files);
+  };
 
-  handleImageChange(e) {
-    this.setState({ uploadImages: e.target.files});
-  }
-
-  handleImageUpload() {
-    const { album, uploadImages } = this.state;
+  const handleImageUpload = () => {
     const formData = new FormData();
     formData.append('album', album);
-    Object.keys(uploadImages).map(index => 
-      formData.append('documents', uploadImages[index])
-    );
-    
-    if (uploadImages.length > 0) {
+    Object.keys(uploadedImages).map((index) => formData.append('documents', uploadedImages[index]));
+    if (uploadedImages.length) {
       fetch(UPLOAD_PHOTOS, {
         method: 'PUT',
-        body : formData
-      }).then(response => response.json())
-        .then(data => {
+        body: formData,
+      }).then((response) => response.json())
+        .then((data) => {
           if (data.message === 'OK') {
-            alert('Images successfully uploaded');
-            this.setState({
-              uploadImages: [],
-              album: 'Travel'
-            });
-            this.handlePaginationChange("", this.state.page);
+            alert('Images successfully uploaded.');
+            setUploadedImages([]);
+            setAlbum('Travel');
+            setIsNewImagesUploaded(!isNewImagesUploaded);
           } else {
-            this.setState({
-              error: true
-            });
+            setUploadError('Something went wrong.');
           }
-      });
+        }).catch((e) => {
+          setUploadError(JSON.stringify(e));
+        });
     } else {
-      alert('Please choose some images.')
+      alert('Please select some images.');
     }
-  }
+  };
 
-  handleImageDelete(name, album) {
+  const handleImageDelete = (name, album) => {
     const data = [{
-      album: album,
-      documents: name
+      album,
+      documents: name,
     }];
     fetch(DELETE_PHOTO, {
       method: 'DELETE',
       body: JSON.stringify(data),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-    }).then(response => response.json())
-      .then(data => {
+    }).then((response) => response.json())
+      .then((data) => {
         if (data.message === 'OK') {
           alert('Image successfully deleted');
-          this.handlePaginationChange("", this.state.page);
+          setIsImageDeleted(!isImageDeleted);
         } else {
-          this.setState({
-            error: true
-          });
+          setDeleteError(true);
         }
+      }).catch((e) => {
+        setDeleteError(JSON.stringify(e));
       });
-  }
+  };
 
-  render() {
-    const { images, loading, error, key, album } = this.state;
-    return (
-      <div className='App'>
-        <Header
-          key={key}
-          album={album}
-          handleImageChange={this.handleImageChange}
-          handleImageUpload={this.handleImageUpload}
-          handleDropdownChange={this.handleDropdownChange}
-        />
-        {loading ?
-          error ? <div> Something went wrong !!</div> :
-            <Body
-              images={images}
-              handleImageDelete={this.handleImageDelete}
-              handlePaginationChange={this.handlePaginationChange}
-            /> : 
-            <div> Loading ... </div>
-          }
-      </div>
-    )
-  }
+  const displayError = () => {
+    if (error || uploadError || deleteError) {
+      return <div> Something went wrong !!</div>;
+    }
+  };
 
-}
+  return (
+    <div className="App">
+      { displayError() }
+      { loading ? (
+        <div> Loading ... </div>
+      ) : (
+        <>
+          <HeaderContext.Provider value={{
+            album, handleDropdownChange, handleImageChange, handleImageUpload,
+          }}
+          >
+            <Header album={album} />
+          </HeaderContext.Provider>
+          <BodyContext.Provider value={{ images, page, handlePaginationChange, handleImageDelete }}>
+            <Body images={images} />
+          </BodyContext.Provider>
+        </>
+      )}
+    </div>
+  );
+};
 
-export default App;
+export {
+  App,
+  HeaderContext,
+  BodyContext,
+};
