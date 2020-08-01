@@ -6,8 +6,8 @@ import useImages from './customHooks/useImages';
 import { UPLOAD_PHOTOS, DELETE_PHOTO } from './constants';
 import './App.css';
 
-const HeaderContext = React.createContext();
-const BodyContext = React.createContext();
+export const HeaderContext = React.createContext();
+export const BodyContext = React.createContext();
 
 const App = () => {
   const [skip, setSkip] = useState(0);
@@ -113,8 +113,4 @@ const App = () => {
   );
 };
 
-export {
-  App,
-  HeaderContext,
-  BodyContext,
-};
+export default App;
