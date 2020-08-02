@@ -33,4 +33,4 @@ Photo.propTypes = {
   raw: PropTypes.string.isRequired,
 };
 
-export default Photo;
+export default React.memo(Photo);

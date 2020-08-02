@@ -1,7 +1,10 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable import/no-cycle */
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import Header from './components/homePage/header';
 import Body from './components/homePage/body';
+import appReducer from './reducers/appReducer';
+import initialState from './store/initialState';
 import useImages from './customHooks/useImages';
 import { UPLOAD_PHOTOS, DELETE_PHOTO } from './constants';
 import './App.css';
@@ -10,32 +13,43 @@ export const HeaderContext = React.createContext();
 export const BodyContext = React.createContext();
 
 const App = () => {
-  const [skip, setSkip] = useState(0);
-  const [limit] = useState(10);
-  const [uploadedImages, setUploadedImages] = useState('');
-  const [uploadError, setUploadError] = useState(false);
-  const [deleteError, setDeleteError] = useState(false);
-  const [isNewImagesUploaded, setIsNewImagesUploaded] = useState(false);
-  const [isImageDeleted, setIsImageDeleted] = useState(false);
-  const [images, error, loading] = useImages(skip, limit, isNewImagesUploaded, isImageDeleted);
-  const [page, setPage] = useState(1);
-  const [album, setAlbum] = useState('Travel');
+  const [state, dispatch] = useReducer(appReducer, initialState);
+
+  const {
+    skip,
+    limit,
+    uploadedImages,
+    uploadError,
+    deleteError,
+    uploadSuccess,
+    deleteSuccess,
+    page,
+    album,
+  } = state;
+
+  const [images, error, loading] = useImages(skip, limit, uploadSuccess, deleteSuccess);
 
   const handlePaginationChange = (event, newPage) => {
     const newSkip = newPage === 1 ? 0 : newPage * 10;
-    setSkip(newSkip);
-    setPage(newPage);
+    dispatch({ type: 'CHANGE_PAGE', skip: newSkip, page: newPage });
   };
 
   const handleDropdownChange = (e) => {
-    setAlbum(e.target.value);
+    dispatch({ type: 'CHANGE_ALBUM', album: e.target.value });
   };
 
   const handleImageChange = (e) => {
-    setUploadedImages(e.target.files);
+    dispatch({ type: 'LOAD_IMAGES', uploadedImages: e.target.files });
   };
 
   const handleImageUpload = () => {
+    dispatch({
+      type: 'UPLOAD_IMAGES',
+      uploadedImages: [],
+      album,
+      uploadSuccess: false,
+      uploadError: '',
+    });
     const formData = new FormData();
     formData.append('album', album);
     Object.keys(uploadedImages).map((index) => formData.append('documents', uploadedImages[index]));
@@ -47,14 +61,30 @@ const App = () => {
         .then((data) => {
           if (data.message === 'OK') {
             alert('Images successfully uploaded.');
-            setUploadedImages([]);
-            setAlbum('Travel');
-            setIsNewImagesUploaded(!isNewImagesUploaded);
+            dispatch({
+              type: 'UPLOAD_IMAGES',
+              uploadedImages: [],
+              album: 'Travel',
+              uploadSuccess: true,
+              uploadError: '',
+            });
           } else {
-            setUploadError('Something went wrong.');
+            dispatch({
+              type: 'UPLOAD_IMAGES',
+              uploadedImages: [],
+              album,
+              uploadSuccess: false,
+              uploadError: 'Something went wrong.',
+            });
           }
         }).catch((e) => {
-          setUploadError(JSON.stringify(e));
+          dispatch({
+            type: 'UPLOAD_IMAGES',
+            uploadedImages: [],
+            album,
+            uploadSuccess: false,
+            uploadError: JSON.stringify(e),
+          });
         });
     } else {
       alert('Please select some images.');
@@ -66,6 +96,7 @@ const App = () => {
       album,
       documents: name,
     }];
+    dispatch({ type: 'DELETE_IMAGE', deleteSuccess: false, deleteError: '' });
     fetch(DELETE_PHOTO, {
       method: 'DELETE',
       body: JSON.stringify(data),
@@ -76,39 +107,45 @@ const App = () => {
       .then((data) => {
         if (data.message === 'OK') {
           alert('Image successfully deleted');
-          setIsImageDeleted(!isImageDeleted);
+          dispatch({ type: 'DELETE_IMAGE', deleteSuccess: true, deleteError: '' });
         } else {
-          setDeleteError(true);
+          dispatch({ type: 'DELETE_IMAGE', deleteSuccess: false, deleteError: 'Something went wrong.' });
         }
       }).catch((e) => {
-        setDeleteError(JSON.stringify(e));
+        dispatch({ type: 'DELETE_IMAGE', deleteSuccess: false, deleteError: JSON.stringify(e) });
       });
   };
 
   const displayError = () => {
     if (error || uploadError || deleteError) {
-      return <div> Something went wrong !!</div>;
+      return true;
     }
+    return false;
   };
+
+  console.log(" App ");
 
   return (
     <div className="App">
-      { displayError() }
-      { loading ? (
-        <div> Loading ... </div>
-      ) : (
-        <>
-          <HeaderContext.Provider value={{
-            album, handleDropdownChange, handleImageChange, handleImageUpload,
-          }}
-          >
-            <Header album={album} />
-          </HeaderContext.Provider>
-          <BodyContext.Provider value={{ images, page, handlePaginationChange, handleImageDelete }}>
-            <Body images={images} />
-          </BodyContext.Provider>
-        </>
-      )}
+      {displayError() && <h2> Something went wrong ... </h2>}
+      {!displayError()
+        ? (!loading ? <h2> Loading .... </h2> : (
+          <>
+            <HeaderContext.Provider value={{
+              album, handleDropdownChange, handleImageChange, handleImageUpload,
+            }}
+            >
+              <Header />
+            </HeaderContext.Provider>
+            <BodyContext.Provider value={{
+              images, page, handlePaginationChange, handleImageDelete,
+            }}
+            >
+              <Body />
+            </BodyContext.Provider>
+          </>
+        )
+        ) : null}
     </div>
   );
 };

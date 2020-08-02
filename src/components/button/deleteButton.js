@@ -6,6 +6,7 @@ import { BodyContext } from '../../App';
 
 const DeleteButton = ({ id, album, name }) => {
   const { handleImageDelete } = useContext(BodyContext);
+
   return (
     <Button
       id={id}
@@ -25,4 +26,4 @@ DeleteButton.propTypes = {
   name: PropTypes.string.isRequired,
 };
 
-export default DeleteButton;
+export default React.memo(DeleteButton);
