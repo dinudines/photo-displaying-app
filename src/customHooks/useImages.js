@@ -1,14 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 import fetch from 'isomorphic-fetch';
+import appReducer from '../reducers/appReducer';
+import initialState from '../store/initialState';
 import { GET_PHOTOS } from '../constants';
 
-const useImages = (skip, limit, isNewImagesUploaded, isImageDeleted) => {
-  const [images, setImages] = useState([]);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+const useImages = (skip, limit, uploadSuccess, deleteSuccess) => {
+  const [state, dispatch] = useReducer(appReducer, initialState);
+  const { images, loading, error } = state;
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({
+      type: 'DISPLAY_IMAGES', loading: true, images, error: '',
+    });
 
     fetch(GET_PHOTOS, {
       method: 'POST',
@@ -21,16 +24,21 @@ const useImages = (skip, limit, isNewImagesUploaded, isImageDeleted) => {
       },
     }).then((response) => response.json())
       .then((data) => {
-        setLoading(false);
         if (data.message === 'OK') {
-          setImages(data.documents);
+          dispatch({
+            type: 'DISPLAY_IMAGES', loading: true, images: data.documents, error,
+          });
         } else {
-          setError('Something went wrong !');
+          dispatch({
+            type: 'DISPLAY_IMAGES', loading: false, images, error: 'Something went wrong.',
+          });
         }
       }).catch((e) => {
-        setError(JSON.stringify(e));
+        dispatch({
+          type: 'DISPLAY_IMAGES', loading: false, images, error: JSON.stringify(e),
+        });
       });
-  }, [skip, limit, isNewImagesUploaded, isImageDeleted]);
+  }, [skip, limit, uploadSuccess, deleteSuccess]);
 
   return [images, error, loading];
 };

@@ -25,4 +25,4 @@ const UploadButtonComponent = () => {
   );
 };
 
-export default UploadButtonComponent;
+export default React.memo(UploadButtonComponent);
