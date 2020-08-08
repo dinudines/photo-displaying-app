@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
-import { BodyContext } from '../../App';
+import { BodyContext } from '../../pages/homePage';
 
 const DeleteButton = ({ id, album, name }) => {
   const { handleImageDelete } = useContext(BodyContext);
