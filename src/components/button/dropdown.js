@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import React, { useContext } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
-import { HeaderContext } from '../../App';
+import { HeaderContext } from '../../pages/homePage';
 
 const Dropdown = () => {
   const { album, handleDropdownChange } = useContext(HeaderContext);

@@ -2,7 +2,7 @@
 /* eslint-disable import/no-cycle */
 import React, { useContext } from 'react';
 import Pagination from '@material-ui/lab/Pagination';
-import { BodyContext } from '../../App';
+import { BodyContext } from '../../pages/homePage';
 
 const PaginationComponent = () => {
   const { page, handlePaginationChange } = useContext(BodyContext);

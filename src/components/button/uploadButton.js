@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useContext } from 'react';
 import Button from '@material-ui/core/Button';
-import { HeaderContext } from '../../App';
+import { HeaderContext } from '../../pages/homePage';
 
 const UploadButtonComponent = () => {
   const { handleImageChange, handleImageUpload } = useContext(HeaderContext);

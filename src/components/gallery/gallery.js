@@ -2,7 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useContext } from 'react';
 import Photo from '../photo/photo';
-import { BodyContext } from '../../App';
+import { BodyContext } from '../../pages/homePage';
 
 const Gallery = () => {
   const { images } = useContext(BodyContext);
