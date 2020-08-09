@@ -100,6 +100,25 @@ label {
   object-fit: contain;
 }
 
+.LoginPage {
+  text-align: center;
+  width: 50%;
+  margin-left: 25%;
+  margin-top: 10%;
+}
+
+.loginForm {
+  padding: 20%;
+}
+
+.marginTop {
+  margin-top: 1rem !important;
+}
+
+.errorTxt {
+  color: red;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
